@@ -79,7 +79,7 @@ public:
 	}
 
 
-    Customers GetCustomers(string criteria,string value){
+    Customers GetCustomers(const string criteria, const string value){
 
         Customers customers;
 
