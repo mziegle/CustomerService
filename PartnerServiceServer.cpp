@@ -7,6 +7,7 @@ using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
+using grpc::StatusCode;
 using customer_service::Customer;
 using customer_service::Id;
 using customer_service::FirstName;
@@ -25,7 +26,7 @@ class PartnerServiceServer final : public CustomerService::Service {
 
     Status GetCustomerById(ServerContext* context, const Id* request, Customer* reply) override {
         DatabaseLoader databaseLoader;
-        *reply = databaseLoader.GetPartnerById(request->id());
+        *reply = databaseLoader.GetCustomerById(request->id());
         return Status::OK;
     }
 

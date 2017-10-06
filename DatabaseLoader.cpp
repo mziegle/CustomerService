@@ -51,7 +51,7 @@ public:
         delete connection;
     }
 
-    Customer GetPartnerById (int id) {
+    Customer GetCustomerById (int id) {
 
 		Customer customer;
 
