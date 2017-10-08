@@ -13,11 +13,9 @@ using customer_service::Customers;
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 
-#define FUNCTION "conncect"
-
 #define COLUMN_PLACEHOLDER "<COLUMN>"
-#define GET_CUSTOMER_BY_ID "SELECT * FROM CUSTOMER WHERE ID = ?"
-#define GET_CUSTOMERS_BY_CRITERIA "SELECT * FROM CUSTOMER WHERE " COLUMN_PLACEHOLDER " = ?"
+#define GET_CUSTOMER_BY_ID "select * from customer where id = ?"
+#define GET_CUSTOMERS_BY_CRITERIA "select * from customer where " COLUMN_PLACEHOLDER " = ?"
 
 using namespace std;
 
@@ -29,6 +27,8 @@ private:
     string db_user;
     string db_password;
     string db;
+
+    string method;
 
 	sql::Driver* driver;
     sql::Connection* connection;
@@ -52,6 +52,8 @@ public:
     }
 
     Customer GetCustomerById (int id) {
+
+        method = "GetCustomerById(" + to_string(id) + ")";
 
 		Customer customer;
 
@@ -81,6 +83,8 @@ public:
 
     Customers GetCustomers(const string criteria, const string value){
 
+        method = "GetCustomerById(" + criteria + ", " + value + ")";
+
         Customers customers;
 
         try {
@@ -89,7 +93,7 @@ public:
             connection->setSchema(db);
 
             string sqlWithCriteria = GET_CUSTOMERS_BY_CRITERIA;
-            replace(sqlWithCriteria,COLUMN_PLACEHOLDER,criteria);
+            replace(sqlWithCriteria, COLUMN_PLACEHOLDER, criteria);
             sql::PreparedStatement* prepared_statement = connection->prepareStatement(sqlWithCriteria);
 
             prepared_statement->setString(1, value);
@@ -145,7 +149,7 @@ private:
 
     void handleSQLException(const sql::SQLException &e) const {
         cout << "# ERR: SQLException in " << __FILE__;
-        cout << "(" << FUNCTION << ") on line " << __LINE__ << endl;
+        cout << "(" << method << ") on line " << __LINE__ << endl;
         cout << "# ERR: " << e.what();
         cout << " (MySQL error code: " << e.getErrorCode();
         cout << ", SQLState: " << e.getSQLState() << " )" << endl;
