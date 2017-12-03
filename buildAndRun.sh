@@ -16,7 +16,7 @@ docker cp customer_service_build:/build/Release/CustomerService run
 docker rm -f customer_service_build
 
 # Build the run image
-docker build --rm -t customer_service:run run
+docker build --rm -t mziegle1/customer_service:run run
 
 # Remove intermediate containers which have appeared during the build process
 docker rmi $(docker images -f "dangling=true" -q)
@@ -29,6 +29,6 @@ docker run \
     -e DB_USER=user \
     -e DB_PASSWORD=user \
     -e DB_NAME=insurance_customers \
-    -e CUSTOMER_SERVICE_PORT=50031 \
+    -e CUSTOMER_SERVICE_PORT=40000 \
     -i -t --security-opt=seccomp:unconfined \
-    --rm customer_service:run
+    --rm mziegle1/customer_service:run

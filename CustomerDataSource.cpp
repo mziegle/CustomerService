@@ -19,7 +19,7 @@ using customer_service::Customers;
 
 using namespace std;
 
-class DatabaseLoader {
+class CustomerDataSource {
 
 private:
 
@@ -35,7 +35,7 @@ private:
 
 public:
 
-	DatabaseLoader(){
+    CustomerDataSource(){
 
 		driver = sql::mysql::get_driver_instance();
         db_server = getenv("DB_SERVER");
@@ -47,7 +47,7 @@ public:
         connection = connectionInit;
 	}
 
-    ~DatabaseLoader(){
+    ~CustomerDataSource(){
         delete connection;
     }
 
@@ -126,7 +126,7 @@ private:
         return true;
     }
 
-    void fillCustomer(const sql::ResultSet *result, Customer *customer) const {
+    void fillCustomer(const sql::ResultSet* result, Customer* customer) const {
         customer->set_id(result->getInt("id"));
         customer->set_first_name(result->getString("first_name"));
         customer->set_last_name(result->getString("last_name"));

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <grpc++/grpc++.h>
 #include "customer_service.grpc.pb.h"
-#include "DatabaseLoader.cpp"
+#include "CustomerDataSource.cpp"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -22,80 +22,80 @@ using customer_service::State;
 using customer_service::Address;
 using customer_service::CustomerService;
 
-class PartnerServiceServer final : public CustomerService::Service {
+class CustomerServiceServer final : public CustomerService::Service {
 
     Status GetCustomerById(ServerContext* context, const Id* request, Customer* reply) override {
-        DatabaseLoader databaseLoader;
+        CustomerDataSource databaseLoader;
         *reply = databaseLoader.GetCustomerById(request->id());
         return Status::OK;
     }
 
     Status GetCustomersByFirstName(ServerContext* context, const FirstName* request,
                              Customers* reply) override {
-        DatabaseLoader databaseLoader;
+        CustomerDataSource databaseLoader;
         *reply = databaseLoader.GetCustomers("first_name",request->first_name());
         return Status::OK;
     }
 
     Status GetCustomersByLastName(ServerContext* context, const LastName* request,
                                   Customers* reply) override {
-        DatabaseLoader databaseLoader;
+        CustomerDataSource databaseLoader;
         *reply = databaseLoader.GetCustomers("last_name",request->first_name());
         return Status::OK;
     }
 
     Status GetCustomersByGender(ServerContext* context, const Gender* request,
                                  Customers* reply) override {
-        DatabaseLoader databaseLoader;
+        CustomerDataSource databaseLoader;
         *reply = databaseLoader.GetCustomers("gender",request->gender());
         return Status::OK;
     }
 
     Status GetCustomersByAddress(ServerContext* context, const Address* request,
                                Customers* reply) override {
-        DatabaseLoader databaseLoader;
+        CustomerDataSource databaseLoader;
         *reply = databaseLoader.GetCustomers("address",request->address());
         return Status::OK;
     }
 
     Status GetCustomersByZip(ServerContext* context, const Zip* request,
                         Customers* reply) override {
-        DatabaseLoader databaseLoader;
+        CustomerDataSource databaseLoader;
         *reply = databaseLoader.GetCustomers("zip",request->zip());
         return Status::OK;
     }
 
     Status GetCustomersByCity(ServerContext* context, const City* request,
                                 Customers* reply) override {
-        DatabaseLoader databaseLoader;
+        CustomerDataSource databaseLoader;
         *reply = databaseLoader.GetCustomers("city",request->city());
         return Status::OK;
     }
 
     Status GetCustomersByState(ServerContext* context, const State* request,
                              Customers* reply) override {
-        DatabaseLoader databaseLoader;
+        CustomerDataSource databaseLoader;
         *reply = databaseLoader.GetCustomers("state",request->state());
         return Status::OK;
     }
 
     Status GetCustomersByCountry(ServerContext* context, const Country* request,
                               Customers* reply) override {
-        DatabaseLoader databaseLoader;
+        CustomerDataSource databaseLoader;
         *reply = databaseLoader.GetCustomers("country",request->country());
         return Status::OK;
     }
 
     Status GetCustomersByTelephone(ServerContext* context, const Telephone* request,
                                 Customers* reply) override {
-        DatabaseLoader databaseLoader;
+        CustomerDataSource databaseLoader;
         *reply = databaseLoader.GetCustomers("telephone",request->telephone());
         return Status::OK;
     }
 
     Status GetCustomersByEmail(ServerContext* context, const Email* request,
                                   Customers* reply) override {
-        DatabaseLoader databaseLoader;
+        CustomerDataSource databaseLoader;
         *reply = databaseLoader.GetCustomers("email",request->email());
         return Status::OK;
     }
@@ -104,9 +104,17 @@ class PartnerServiceServer final : public CustomerService::Service {
 
 void RunServer() {
 
-    string customer_service_port = getenv("CUSTOMER_SERVICE_PORT");
-    std::string server_address("0.0.0.0:" + customer_service_port);
-    PartnerServiceServer service;
+
+    char* customer_service_port = getenv("CUSTOMER_SERVICE_PORT");
+    string customer_service_port_str;
+
+    if (customer_service_port == NULL)
+        customer_service_port_str = "40000";
+    else
+        customer_service_port_str = customer_service_port;
+
+    std::string server_address("0.0.0.0:" + customer_service_port_str);
+    CustomerServiceServer service;
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
