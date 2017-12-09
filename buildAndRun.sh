@@ -23,7 +23,7 @@ docker rmi $(docker images -f "dangling=true" -q)
 
 # Run the executable in the run container
 docker run \
-    -p 50031:50031 \
+    -p 40000:40000 \
     -e LD_LIBRARY_PATH=/usr/local/lib \
     -e DB_SERVER=docker.for.mac.localhost \
     -e DB_USER=user \

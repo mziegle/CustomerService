@@ -24,10 +24,28 @@ using customer_service::CustomerService;
 
 class CustomerServiceServer final : public CustomerService::Service {
 
+    /**
+     * Finds a customer by id.
+     * @param context
+     * @param request
+     * @param reply
+     * @return
+     */
     Status GetCustomerById(ServerContext* context, const Id* request, Customer* reply) override {
-        CustomerDataSource databaseLoader;
-        *reply = databaseLoader.GetCustomerById(request->id());
-        return Status::OK;
+        
+        Status status;
+        CustomerDataSource customerDataSource;
+        status = customerDataSource.ConnectToDataSource();
+        Customer customer;
+        customer.set_id(request->id());
+        if(status.error_code() == StatusCode::OK){
+            status = customerDataSource.GetCustomerById(customer);
+            if(status.error_code() == StatusCode::OK) {
+                *reply = customer;
+                customerDataSource.DisconnectDataSource();
+            }
+        }
+        return status;
     }
 
     Status GetCustomersByFirstName(ServerContext* context, const FirstName* request,
@@ -103,7 +121,6 @@ class CustomerServiceServer final : public CustomerService::Service {
 };
 
 void RunServer() {
-
 
     char* customer_service_port = getenv("CUSTOMER_SERVICE_PORT");
     string customer_service_port_str;

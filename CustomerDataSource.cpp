@@ -5,6 +5,8 @@
 
 using customer_service::Customer;
 using customer_service::Customers;
+using grpc::Status;
+using grpc::StatusCode;
 
 #include "mysql_connection.h"
 #include "mysql_driver.h"
@@ -37,25 +39,47 @@ public:
 
     CustomerDataSource(){
 
-		driver = sql::mysql::get_driver_instance();
+        driver = sql::mysql::get_driver_instance();
         db_server = getenv("DB_SERVER");
         db_user = getenv("DB_USER");
         db_password = getenv("DB_PASSWORD");
         db = getenv("DB_NAME");
 
-        sql::Connection* connectionInit(driver->connect(db_server, db_user, db_password));
-        connection = connectionInit;
 	}
 
     ~CustomerDataSource(){
+
+    }
+
+    Status ConnectToDataSource() {
+
+        Status status;
+        try {
+
+            method = "CustomerDataSource";
+            sql::Connection* connectionInit(driver->connect(db_server, db_user, db_password));
+            connection = connectionInit;
+
+        } catch (sql::SQLException& e) {
+            status = handleSQLException(e);
+        }
+
+        return status;
+    }
+
+    void DisconnectDataSource() {
         delete connection;
     }
 
-    Customer GetCustomerById (int id) {
+
+    Status GetCustomerById (Customer& customer) {
+
+        int id = customer.id();
 
         method = "GetCustomerById(" + to_string(id) + ")";
 
-		Customer customer;
+        Status status;
+		// Customer customer;
 
 		try {
 
@@ -66,18 +90,22 @@ public:
 			prepared_statement->setInt(1, id);
 			sql::ResultSet* result(prepared_statement->executeQuery());
 
-			while (result->next()) {
-                fillCustomer(result, &customer);
-			}
+
+			if (result->next()) {
+                fillCustomer(result, customer);
+			} else {
+                Status tmp_status(StatusCode::NOT_FOUND,"No customer for id " + to_string(id) + " found");
+                status = tmp_status;
+            }
 
 			delete prepared_statement;
 			delete result;
 
 		} catch (sql::SQLException& e) {
-            handleSQLException(e);
+            status = handleSQLException(e);
 		}
 
-		return customer;
+		return status;
 	}
 
 
@@ -101,7 +129,7 @@ public:
             sql::ResultSet* result(prepared_statement->executeQuery());
             while (result->next()) {
                 Customer* customer = customers.add_customers();
-                fillCustomer(result, customer);
+                fillCustomer(result, *customer);
             }
 
             delete prepared_statement;
@@ -126,33 +154,35 @@ private:
         return true;
     }
 
-    void fillCustomer(const sql::ResultSet* result, Customer* customer) const {
-        customer->set_id(result->getInt("id"));
-        customer->set_first_name(result->getString("first_name"));
-        customer->set_last_name(result->getString("last_name"));
-        customer->set_address(result->getString("address"));
-        customer->set_gender(result->getString("gender"));
-        customer->set_zip(result->getString("zip"));
-        customer->set_city(result->getString("city"));
-        customer->set_state(result->getString("state"));
-        customer->set_country(result->getString("country"));
-        customer->set_telephone(result->getString("telephone"));
-        customer->set_email(result->getString("email"));
+    void fillCustomer(const sql::ResultSet* result, Customer& customer) const {
+        customer.set_id(result->getInt("id"));
+        customer.set_first_name(result->getString("first_name"));
+        customer.set_last_name(result->getString("last_name"));
+        customer.set_address(result->getString("address"));
+        customer.set_gender(result->getString("gender"));
+        customer.set_zip(result->getString("zip"));
+        customer.set_city(result->getString("city"));
+        customer.set_state(result->getString("state"));
+        customer.set_country(result->getString("country"));
+        customer.set_telephone(result->getString("telephone"));
+        customer.set_email(result->getString("email"));
     }
 
+    void reconnectWhenNeeded() {
 
-    void reconnectWhenNeeded() const {
         if(!connection->isValid()){
             connection->reconnect();
         }
     }
 
-    void handleSQLException(const sql::SQLException &e) const {
+    Status handleSQLException(sql::SQLException &e) const {
         cout << "# ERR: SQLException in " << __FILE__;
         cout << "(" << method << ") on line " << __LINE__ << endl;
         cout << "# ERR: " << e.what();
         cout << " (MySQL error code: " << e.getErrorCode();
         cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+        Status status(StatusCode::INTERNAL,e.what());
+        return status;
     }
 
 };
