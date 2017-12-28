@@ -24,13 +24,6 @@ using customer_service::CustomerService;
 
 class CustomerServiceServer final : public CustomerService::Service {
 
-    /**
-     * Finds a customer by id.
-     * @param context
-     * @param request
-     * @param reply
-     * @return
-     */
     Status GetCustomerById(ServerContext* context, const Id* request, Customer* reply) override {
         
         Status status;
@@ -57,65 +50,110 @@ class CustomerServiceServer final : public CustomerService::Service {
 
     Status GetCustomersByLastName(ServerContext* context, const LastName* request,
                                   Customers* reply) override {
-        CustomerDataSource databaseLoader;
-        *reply = databaseLoader.GetCustomers("last_name",request->first_name());
-        return Status::OK;
+        Status status;
+        CustomerDataSource customerDataSource;
+        status = customerDataSource.ConnectToDataSource();
+        if(status.error_code() == StatusCode::OK){
+            *reply = customerDataSource.GetCustomers("last_name",request->first_name());
+            status = Status::OK;
+        }
+        return status;
     }
 
     Status GetCustomersByGender(ServerContext* context, const Gender* request,
                                  Customers* reply) override {
-        CustomerDataSource databaseLoader;
-        *reply = databaseLoader.GetCustomers("gender",request->gender());
-        return Status::OK;
+        Status status;
+        CustomerDataSource customerDataSource;
+        status = customerDataSource.ConnectToDataSource();
+        if(status.error_code() == StatusCode::OK){
+            *reply = customerDataSource.GetCustomers("gender",request->gender());
+            status = Status::OK;
+        }
+        return status;
     }
 
     Status GetCustomersByAddress(ServerContext* context, const Address* request,
                                Customers* reply) override {
-        CustomerDataSource databaseLoader;
-        *reply = databaseLoader.GetCustomers("address",request->address());
-        return Status::OK;
+        Status status;
+        CustomerDataSource customerDataSource;
+        status = customerDataSource.ConnectToDataSource();
+        if(status.error_code() == StatusCode::OK){
+            *reply = customerDataSource.GetCustomers("address",request->address());
+            status = Status::OK;
+        }
+        return status;
     }
 
     Status GetCustomersByZip(ServerContext* context, const Zip* request,
                         Customers* reply) override {
-        CustomerDataSource databaseLoader;
-        *reply = databaseLoader.GetCustomers("zip",request->zip());
-        return Status::OK;
+        Status status;
+        CustomerDataSource customerDataSource;
+        status = customerDataSource.ConnectToDataSource();
+        if(status.error_code() == StatusCode::OK){
+            *reply = customerDataSource.GetCustomers("zip",request->zip());
+            status = Status::OK;
+        }
+        return status;
     }
 
     Status GetCustomersByCity(ServerContext* context, const City* request,
                                 Customers* reply) override {
-        CustomerDataSource databaseLoader;
-        *reply = databaseLoader.GetCustomers("city",request->city());
-        return Status::OK;
+        Status status;
+        CustomerDataSource customerDataSource;
+        status = customerDataSource.ConnectToDataSource();
+        if(status.error_code() == StatusCode::OK){
+            *reply = customerDataSource.GetCustomers("city",request->city());
+            status = Status::OK;
+        }
+        return status;
     }
 
     Status GetCustomersByState(ServerContext* context, const State* request,
                              Customers* reply) override {
-        CustomerDataSource databaseLoader;
-        *reply = databaseLoader.GetCustomers("state",request->state());
-        return Status::OK;
+        Status status;
+        CustomerDataSource customerDataSource;
+        status = customerDataSource.ConnectToDataSource();
+        if(status.error_code() == StatusCode::OK){
+            *reply = customerDataSource.GetCustomers("state",request->state());
+            status = Status::OK;
+        }
+        return status;
     }
 
     Status GetCustomersByCountry(ServerContext* context, const Country* request,
                               Customers* reply) override {
-        CustomerDataSource databaseLoader;
-        *reply = databaseLoader.GetCustomers("country",request->country());
-        return Status::OK;
+        Status status;
+        CustomerDataSource customerDataSource;
+        status = customerDataSource.ConnectToDataSource();
+        if(status.error_code() == StatusCode::OK){
+            *reply = customerDataSource.GetCustomers("country",request->country());
+            status = Status::OK;
+        }
+        return status;
     }
 
     Status GetCustomersByTelephone(ServerContext* context, const Telephone* request,
                                 Customers* reply) override {
-        CustomerDataSource databaseLoader;
-        *reply = databaseLoader.GetCustomers("telephone",request->telephone());
-        return Status::OK;
+        Status status;
+        CustomerDataSource customerDataSource;
+        status = customerDataSource.ConnectToDataSource();
+        if(status.error_code() == StatusCode::OK){
+            *reply = customerDataSource.GetCustomers("telephone",request->telephone());
+            status = Status::OK;
+        }
+        return status;
     }
 
     Status GetCustomersByEmail(ServerContext* context, const Email* request,
                                   Customers* reply) override {
-        CustomerDataSource databaseLoader;
-        *reply = databaseLoader.GetCustomers("email",request->email());
-        return Status::OK;
+        Status status;
+        CustomerDataSource customerDataSource;
+        status = customerDataSource.ConnectToDataSource();
+        if(status.error_code() == StatusCode::OK){
+            *reply = customerDataSource.GetCustomers("email",request->email());
+            status = Status::OK;
+        }
+        return status;
     }
 
 };
